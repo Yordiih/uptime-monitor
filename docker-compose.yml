@@ -16,5 +16,16 @@ services:
     depends_on:
       - mongo
 
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    ports:
+      - "4100:4100"
+    environment:
+      MONGO_URI: ${MONGO_URI:-mongodb://mongo:27017/uptime}
+    depends_on:
+      - mongo
+
 volumes:
   mongo-data:
