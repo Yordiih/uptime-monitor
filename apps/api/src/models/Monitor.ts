@@ -13,6 +13,10 @@ const monitorSchema = new Schema(
     intervalMinutes: { type: Number, default: 5 },
     expectedStatus: { type: Number, default: 200 },
     paused: { type: Boolean, default: false },
+    // written by the worker, read-only for API clients
+    lastCheckedAt: { type: Date },
+    lastStatus: { type: String, enum: ["up", "down"] },
+    lastResponseTimeMs: { type: Number },
   },
   { timestamps: true }
 );
