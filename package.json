@@ -1,5 +1,10 @@
 {
   "name": "uptime-monitor",
   "private": true,
-  "workspaces": ["apps/*"]
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "test": "npm run test --workspaces --if-present"
+  }
 }
