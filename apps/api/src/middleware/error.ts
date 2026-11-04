@@ -1,4 +1,5 @@
 import type { ErrorRequestHandler } from "express";
+import { logger } from "../logger";
 
 export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
   const status =
@@ -6,7 +7,7 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
       ? err.status
       : 500;
   if (status === 500) {
-    console.error(err);
+    logger.error({ err }, "unhandled error");
   }
   res
     .status(status)
