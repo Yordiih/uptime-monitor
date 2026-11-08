@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  node:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { workspace: apps/api, mongo: true }
+          - { workspace: apps/worker, mongo: false }
+          - { workspace: apps/web, mongo: false }
+    uses: Yordiih/github-workflows-library/.github/workflows/node-ci.yml@v1
+    with:
+      workspace: ${{ matrix.workspace }}
+      needs-mongo: ${{ matrix.mongo }}
+
+  docker:
+    needs: node
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { image: uptime-api, dockerfile: apps/api/Dockerfile }
+          - { image: uptime-worker, dockerfile: apps/worker/Dockerfile }
+          - { image: uptime-web, dockerfile: apps/web/Dockerfile }
+    uses: Yordiih/github-workflows-library/.github/workflows/docker-build.yml@v1
+    with:
+      image-name: ${{ matrix.image }}
+      dockerfile: ${{ matrix.dockerfile }}
