@@ -13,6 +13,7 @@ services:
     environment:
       MONGO_URI: ${MONGO_URI:-mongodb://mongo:27017/uptime}
       JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      TRUST_PROXY: "1"
     depends_on:
       - mongo
 
@@ -26,6 +27,15 @@ services:
       MONGO_URI: ${MONGO_URI:-mongodb://mongo:27017/uptime}
     depends_on:
       - mongo
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api
 
 volumes:
   mongo-data:
