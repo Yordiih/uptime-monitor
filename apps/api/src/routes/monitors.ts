@@ -4,6 +4,7 @@ import { z } from "zod";
 import { requireAuth } from "../middleware/auth";
 import { validate } from "../middleware/validate";
 import { Monitor } from "../models/Monitor";
+import { Incident } from "../models/Incident";
 
 const MAX_MONITORS_PER_USER = 20;
 
@@ -82,5 +83,6 @@ monitorsRouter.delete("/:id", async (req, res) => {
     res.status(404).json({ error: "not_found" });
     return;
   }
+  await Incident.deleteMany({ monitor: req.params.id });
   res.status(204).end();
 });

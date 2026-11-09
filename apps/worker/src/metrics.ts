@@ -26,3 +26,14 @@ export const lastTick = new client.Gauge({
   name: "uptime_worker_last_tick_timestamp_seconds",
   help: "Unix time of the last completed scheduler tick",
 });
+
+export const incidentsTotal = new client.Counter({
+  name: "uptime_incidents_total",
+  help: "Incidents opened and resolved",
+  labelNames: ["event"],
+});
+
+export const incidentsOpen = new client.Gauge({
+  name: "uptime_incidents_open",
+  help: "Number of currently open incidents",
+});
