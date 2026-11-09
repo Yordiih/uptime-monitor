@@ -1,9 +1,10 @@
 import { Schema, model } from "mongoose";
 
-// Minimal copy of the API's Monitor schema (same "monitors" collection).
+// Minimal copy of the API's schemas (same collections).
 // Later this can move into a shared workspace package.
 const monitorSchema = new Schema(
   {
+    owner: { type: Schema.Types.ObjectId, required: true },
     name: { type: String, required: true },
     url: { type: String, required: true },
     intervalMinutes: { type: Number, default: 5 },
@@ -12,6 +13,9 @@ const monitorSchema = new Schema(
     lastCheckedAt: { type: Date },
     lastStatus: { type: String, enum: ["up", "down"] },
     lastResponseTimeMs: { type: Number },
+    state: { type: String, enum: ["up", "down"] },
+    failureStreak: { type: Number, default: 0 },
+    firstFailureAt: { type: Date },
   },
   { timestamps: true }
 );
@@ -33,3 +37,27 @@ checkResultSchema.index({ monitor: 1, checkedAt: -1 });
 checkResultSchema.index({ checkedAt: 1 }, { expireAfterSeconds: 30 * 24 * 60 * 60 });
 
 export const CheckResult = model("CheckResult", checkResultSchema);
+
+const incidentSchema = new Schema(
+  {
+    monitor: { type: Schema.Types.ObjectId, ref: "Monitor", required: true },
+    owner: { type: Schema.Types.ObjectId, required: true },
+    open: { type: Boolean, default: true },
+    startedAt: { type: Date, required: true },
+    resolvedAt: { type: Date },
+    lastError: { type: String },
+    lastStatusCode: { type: Number },
+  },
+  { timestamps: true }
+);
+
+// must stay identical to the API's definitions
+incidentSchema.index(
+  { monitor: 1 },
+  { unique: true, partialFilterExpression: { open: true } }
+);
+incidentSchema.index({ monitor: 1, startedAt: -1 });
+incidentSchema.index({ owner: 1, startedAt: -1 });
+incidentSchema.index({ resolvedAt: 1 }, { expireAfterSeconds: 90 * 24 * 60 * 60 });
+
+export const Incident = model("Incident", incidentSchema);

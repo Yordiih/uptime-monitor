@@ -9,6 +9,7 @@ import { logger } from "./logger";
 import { errorHandler } from "./middleware/error";
 import { authRouter } from "./routes/auth";
 import { monitorsRouter } from "./routes/monitors";
+import { incidentsRouter } from "./routes/incidents";
 
 client.collectDefaultMetrics();
 
@@ -55,6 +56,7 @@ app.use(
 );
 app.use("/api/auth", authRouter);
 app.use("/api/monitors", monitorsRouter);
+app.use("/api/incidents", incidentsRouter);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "not_found" });

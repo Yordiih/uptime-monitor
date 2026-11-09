@@ -17,6 +17,9 @@ const monitorSchema = new Schema(
     lastCheckedAt: { type: Date },
     lastStatus: { type: String, enum: ["up", "down"] },
     lastResponseTimeMs: { type: Number },
+    state: { type: String, enum: ["up", "down"] },
+    failureStreak: { type: Number, default: 0 },
+    firstFailureAt: { type: Date },
   },
   { timestamps: true }
 );

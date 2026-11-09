@@ -1,7 +1,13 @@
 import { checkUrl } from "./checker";
+import { recordResult } from "./incidents";
 import { log } from "./log";
-import { activeMonitors, checkDuration, checksTotal } from "./metrics";
-import { CheckResult, Monitor } from "./models";
+import {
+  activeMonitors,
+  checkDuration,
+  checksTotal,
+  incidentsOpen,
+} from "./metrics";
+import { CheckResult, Incident, Monitor } from "./models";
 
 const CONCURRENCY = 10;
 const RETRY_DELAY_MS = 2_000;
@@ -31,8 +37,12 @@ interface CheckTarget {
 
 async function runCheck(target: CheckTarget): Promise<void> {
   let outcome = await checkUrl(target.url, target.expectedStatus);
-  if (!outcome.up) {
-    // retry once before declaring the monitor down, to avoid false alarms
+
+  // blocked targets can never succeed, so do not wait and retry them
+  const permanent =
+    outcome.error?.startsWith("blocked") || outcome.error === "unsupported protocol";
+  if (!outcome.up && !permanent) {
+    // retry once before counting the failure, to avoid false alarms
     await sleep(RETRY_DELAY_MS);
     outcome = await checkUrl(target.url, target.expectedStatus);
   }
@@ -48,10 +58,7 @@ async function runCheck(target: CheckTarget): Promise<void> {
     responseTimeMs: outcome.responseTimeMs,
     error: outcome.error,
   });
-  await Monitor.updateOne(
-    { _id: target.id },
-    { $set: { lastStatus: result, lastResponseTimeMs: outcome.responseTimeMs } }
-  );
+  await recordResult(target.id, outcome);
 
   // the monitor id is logged, never the URL (URLs can contain secrets)
   log("info", "check complete", {
@@ -66,6 +73,7 @@ async function runCheck(target: CheckTarget): Promise<void> {
 export async function tick(): Promise<void> {
   const monitors = await Monitor.find({ paused: false });
   activeMonitors.set(monitors.length);
+  incidentsOpen.set(await Incident.countDocuments({ open: true }));
 
   const now = Date.now();
   const due = monitors.filter(

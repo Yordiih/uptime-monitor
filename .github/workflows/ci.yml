@@ -19,7 +19,7 @@ jobs:
       matrix:
         include:
           - { workspace: apps/api, mongo: true }
-          - { workspace: apps/worker, mongo: false }
+          - { workspace: apps/worker, mongo: true }
           - { workspace: apps/web, mongo: false }
     uses: Yordiih/github-workflows-library/.github/workflows/node-ci.yml@v1
     with:
