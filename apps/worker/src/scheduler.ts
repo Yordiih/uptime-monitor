@@ -1,5 +1,6 @@
 import { checkUrl } from "./checker";
 import { recordResult } from "./incidents";
+import { processTestRequests, track } from "./notify";
 import { log } from "./log";
 import {
   activeMonitors,
@@ -71,6 +72,7 @@ async function runCheck(target: CheckTarget): Promise<void> {
 }
 
 export async function tick(): Promise<void> {
+  track(processTestRequests());
   const monitors = await Monitor.find({ paused: false });
   activeMonitors.set(monitors.length);
   incidentsOpen.set(await Incident.countDocuments({ open: true }));

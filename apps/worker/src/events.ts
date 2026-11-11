@@ -1,19 +1,8 @@
 import { log } from "./log";
+import type { IncidentInfo, MonitorInfo } from "./messages";
 import { incidentsTotal } from "./metrics";
+import { notifyIncident } from "./notify";
 
-interface IncidentInfo {
-  id: string;
-  startedAt: Date;
-  resolvedAt?: Date | null;
-  lastError?: string | null;
-  lastStatusCode?: number | null;
-}
-
-interface MonitorInfo {
-  id: string;
-}
-
-// Hook points: the notification channels attach here in the next branch.
 // Only ids are logged, never URLs or webhook addresses.
 export function incidentOpened(incident: IncidentInfo, monitor: MonitorInfo): void {
   incidentsTotal.inc({ event: "opened" });
@@ -23,15 +12,18 @@ export function incidentOpened(incident: IncidentInfo, monitor: MonitorInfo): vo
     error: incident.lastError ?? undefined,
     statusCode: incident.lastStatusCode ?? undefined,
   });
+  notifyIncident("opened", incident, monitor);
 }
 
 export function incidentResolved(incident: IncidentInfo, monitor: MonitorInfo): void {
   incidentsTotal.inc({ event: "resolved" });
-  const durationMs =
-    incident.resolvedAt ? incident.resolvedAt.getTime() - incident.startedAt.getTime() : undefined;
+  const durationMs = incident.resolvedAt
+    ? incident.resolvedAt.getTime() - incident.startedAt.getTime()
+    : undefined;
   log("info", "incident resolved", {
     incidentId: incident.id,
     monitorId: monitor.id,
     durationMs,
   });
+  notifyIncident("resolved", incident, monitor);
 }

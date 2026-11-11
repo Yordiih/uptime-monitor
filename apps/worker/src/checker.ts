@@ -46,7 +46,7 @@ export function isPrivateAddress(ip: string): boolean {
 // Validates the address that is actually used to connect, which also
 // defends against DNS rebinding (a name that resolves to a public IP
 // during a pre-check and to a private IP when connecting).
-const safeLookup: net.LookupFunction = (hostname, options, callback) => {
+export const safeLookup: net.LookupFunction = (hostname, options, callback) => {
   dns.lookup(hostname, options, (err, address, family) => {
     if (err) {
       callback(err, address, family);
