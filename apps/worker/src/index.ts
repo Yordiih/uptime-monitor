@@ -5,6 +5,7 @@ import { config } from "./config";
 import { log } from "./log";
 import { lastTick } from "./metrics";
 import { tick } from "./scheduler";
+import { drainNotifications } from "./notify";
 
 let lastTickAt = Date.now();
 let currentTick: Promise<void> = Promise.resolve();
@@ -62,6 +63,7 @@ async function main(): Promise<void> {
     clearInterval(timer);
     server.close();
     await currentTick; // let in-flight checks finish
+    await drainNotifications(); // let in-flight notifications finish
     await mongoose.disconnect();
     process.exit(0);
   }

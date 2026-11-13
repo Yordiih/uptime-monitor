@@ -9,6 +9,7 @@ import { logger } from "./logger";
 import { errorHandler } from "./middleware/error";
 import { authRouter } from "./routes/auth";
 import { monitorsRouter } from "./routes/monitors";
+import { notificationsRouter } from "./routes/notifications";
 import { incidentsRouter } from "./routes/incidents";
 
 client.collectDefaultMetrics();
@@ -56,6 +57,7 @@ app.use(
 );
 app.use("/api/auth", authRouter);
 app.use("/api/monitors", monitorsRouter);
+app.use("/api/notifications", notificationsRouter);
 app.use("/api/incidents", incidentsRouter);
 
 app.use((_req, res) => {

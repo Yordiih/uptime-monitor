@@ -37,3 +37,9 @@ export const incidentsOpen = new client.Gauge({
   name: "uptime_incidents_open",
   help: "Number of currently open incidents",
 });
+
+export const notificationsTotal = new client.Counter({
+  name: "uptime_notifications_total",
+  help: "Notification attempts by channel, event and result",
+  labelNames: ["channel", "event", "result"],
+});

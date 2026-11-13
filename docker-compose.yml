@@ -4,6 +4,11 @@ services:
     volumes:
       - mongo-data:/data/db
 
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "127.0.0.1:8025:8025"
+
   api:
     build:
       context: .
@@ -25,8 +30,12 @@ services:
       - "4100:4100"
     environment:
       MONGO_URI: ${MONGO_URI:-mongodb://mongo:27017/uptime}
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_FROM: "Uptime Monitor <alerts@uptime.local>"
     depends_on:
       - mongo
+      - mailpit
 
   web:
     build:

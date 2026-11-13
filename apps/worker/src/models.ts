@@ -61,3 +61,43 @@ incidentSchema.index({ owner: 1, startedAt: -1 });
 incidentSchema.index({ resolvedAt: 1 }, { expireAfterSeconds: 90 * 24 * 60 * 60 });
 
 export const Incident = model("Incident", incidentSchema);
+
+// Minimal copy of the API's user schema: the worker only reads the email address.
+const userSchema = new Schema({ email: { type: String, required: true } });
+export const User = model("User", userSchema);
+
+const notificationSettingSchema = new Schema(
+  {
+    owner: { type: Schema.Types.ObjectId, required: true, unique: true },
+    slackEnabled: { type: Boolean, default: false },
+    slackWebhookUrl: { type: String },
+    emailEnabled: { type: Boolean, default: false },
+    emailWindowStart: { type: Date },
+    emailCount: { type: Number, default: 0 },
+  },
+  { timestamps: true }
+);
+export const NotificationSettings = model(
+  "NotificationSetting",
+  notificationSettingSchema,
+  "notification_settings"
+);
+
+const notificationTestSchema = new Schema({
+  owner: { type: Schema.Types.ObjectId, required: true },
+  channel: { type: String, enum: ["slack", "email"], required: true },
+  status: {
+    type: String,
+    enum: ["pending", "processing", "sent", "failed"],
+    default: "pending",
+  },
+  error: { type: String },
+  createdAt: { type: Date, default: Date.now },
+});
+notificationTestSchema.index({ owner: 1, channel: 1, createdAt: -1 });
+notificationTestSchema.index({ createdAt: 1 }, { expireAfterSeconds: 24 * 60 * 60 });
+export const NotificationTest = model(
+  "NotificationTest",
+  notificationTestSchema,
+  "notification_tests"
+);
