@@ -10,6 +10,7 @@ FROM node:22-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 # pull in patched Alpine packages the base image may not include yet
+ARG APK_REFRESH=2026-11-11
 RUN apk upgrade --no-cache
 COPY package*.json ./
 COPY apps/worker/package.json apps/worker/
