@@ -111,6 +111,10 @@ export function describeError(err: unknown): string {
         return "Wrong email or password.";
       case "email_taken":
         return "That email is already registered.";
+      case "slack_webhook_required":
+        return "Add a Slack webhook URL first.";
+      case "test_already_pending":
+        return "A test is already being sent. Please wait a moment.";
       case "monitor_limit_reached":
         return "You reached the limit of 20 monitors.";
       case "validation_error":
@@ -124,3 +128,53 @@ export function describeError(err: unknown): string {
   }
   return "Cannot reach the server.";
 }
+
+export interface TestStatus {
+  status: "pending" | "processing" | "sent" | "failed";
+  error: string | null;
+  at: string;
+}
+
+export interface NotificationSettings {
+  slack: { enabled: boolean; configured: boolean; webhookHint: string | null };
+  email: { enabled: boolean; address: string | null };
+  lastTests: { slack: TestStatus | null; email: TestStatus | null };
+}
+
+export interface Incident {
+  _id: string;
+  monitorId: string;
+  monitorName: string | null;
+  open: boolean;
+  startedAt: string;
+  resolvedAt: string | null;
+  durationMs: number;
+  lastError: string | null;
+  lastStatusCode: number | null;
+}
+
+export const getNotificationSettings = () =>
+  request<NotificationSettings>("/notifications/settings");
+
+export const updateNotificationSettings = (changes: {
+  slack?: { enabled?: boolean; webhookUrl?: string | null };
+  email?: { enabled?: boolean };
+}) =>
+  request<NotificationSettings>("/notifications/settings", {
+    method: "PUT",
+    body: JSON.stringify(changes),
+  });
+
+export const sendTestNotification = (channel: "slack" | "email") =>
+  request<{ id: string; status: string }>("/notifications/test", {
+    method: "POST",
+    body: JSON.stringify({ channel }),
+  });
+
+export const listIncidents = (params: { status?: "open" | "resolved"; limit?: number } = {}) => {
+  const query = new URLSearchParams();
+  if (params.status) query.set("status", params.status);
+  if (params.limit) query.set("limit", String(params.limit));
+  const qs = query.toString();
+  return request<Incident[]>(`/incidents${qs ? `?${qs}` : ""}`);
+};

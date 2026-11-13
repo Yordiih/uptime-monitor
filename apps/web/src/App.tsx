@@ -1,8 +1,11 @@
 import type { ReactNode } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./auth";
+import Layout from "./components/Layout";
+import AlertsPage from "./pages/AlertsPage";
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
+import IncidentsPage from "./pages/IncidentsPage";
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { token } = useAuth();
@@ -14,13 +17,16 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<AuthPage />} />
       <Route
-        path="/"
         element={
           <RequireAuth>
-            <Dashboard />
+            <Layout />
           </RequireAuth>
         }
-      />
+      >
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/incidents" element={<IncidentsPage />} />
+        <Route path="/alerts" element={<AlertsPage />} />
+      </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

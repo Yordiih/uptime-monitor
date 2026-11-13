@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   deleteMonitor,
   describeError,
+  listIncidents,
   listMonitors,
   updateMonitor,
   type Monitor,
 } from "../api";
-import { useAuth } from "../auth";
 import AddMonitorForm from "../components/AddMonitorForm";
 
 function statusOf(monitor: Monitor): "paused" | "up" | "down" | "pending" {
@@ -15,8 +16,8 @@ function statusOf(monitor: Monitor): "paused" | "up" | "down" | "pending" {
 }
 
 export default function Dashboard() {
-  const { logout } = useAuth();
   const [monitors, setMonitors] = useState<Monitor[]>([]);
+  const [openIncidents, setOpenIncidents] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -28,6 +29,11 @@ export default function Dashboard() {
       setError(describeError(err));
     } finally {
       setLoading(false);
+    }
+    try {
+      setOpenIncidents((await listIncidents({ status: "open", limit: 100 })).length);
+    } catch {
+      /* the banner is optional: a failure here must not break the monitor list */
     }
   }, []);
 
@@ -57,13 +63,13 @@ export default function Dashboard() {
   }
 
   return (
-    <main className="dashboard">
-      <header>
-        <h1>Uptime Monitor</h1>
-        <button type="button" className="link" onClick={logout}>
-          Log out
-        </button>
-      </header>
+    <>
+      {openIncidents > 0 && (
+        <p className="banner down" role="status">
+          {openIncidents} open {openIncidents === 1 ? "incident" : "incidents"}.{" "}
+          <Link to="/incidents">View incidents</Link>
+        </p>
+      )}
 
       <AddMonitorForm onCreated={(monitor) => setMonitors((list) => [monitor, ...list])} />
 
@@ -108,6 +114,6 @@ export default function Dashboard() {
           );
         })}
       </ul>
-    </main>
+    </>
   );
 }
