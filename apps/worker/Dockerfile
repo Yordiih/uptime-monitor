@@ -1,4 +1,4 @@
-FROM node:22-alpine AS build
+FROM node:25-alpine AS build
 WORKDIR /app
 COPY package*.json tsconfig.base.json ./
 COPY apps/worker/package.json apps/worker/
@@ -6,7 +6,7 @@ RUN npm ci -w apps/worker --include-workspace-root
 COPY apps/worker apps/worker
 RUN npm run build -w apps/worker
 
-FROM node:22-alpine
+FROM node:25-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 # pull in patched Alpine packages the base image may not include yet
