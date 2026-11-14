@@ -78,7 +78,7 @@ export default function Dashboard() {
       {openIncidents > 0 && (
         <p className="banner down" role="status">
           {openIncidents} open {openIncidents === 1 ? "incident" : "incidents"}.{" "}
-          <Link to="/incidents">View incidents</Link>
+          <Link to="/app/incidents">View incidents</Link>
         </p>
       )}
 
@@ -156,7 +156,7 @@ export default function Dashboard() {
             <li key={monitor._id} className="card monitor">
               <span className={`badge ${status}`}>{status}</span>
               <div className="monitor-info">
-                <Link to={`/monitors/${monitor._id}`}>
+                <Link to={`/app/monitors/${monitor._id}`}>
                   <strong>{monitor.name}</strong>
                 </Link>
                 <span className="muted">{monitor.url}</span>

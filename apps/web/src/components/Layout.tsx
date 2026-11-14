@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../auth";
 
 export default function Layout() {
@@ -6,13 +6,17 @@ export default function Layout() {
   return (
     <main className="dashboard">
       <header className="topbar">
-        <h1>Uptime Monitor</h1>
+        <h1>
+          <Link to="/" className="brand">
+            Uptime Monitor
+          </Link>
+        </h1>
         <nav aria-label="Main">
-          <NavLink to="/" end>
+          <NavLink to="/app" end>
             Monitors
           </NavLink>
-          <NavLink to="/incidents">Incidents</NavLink>
-          <NavLink to="/alerts">Alerts</NavLink>
+          <NavLink to="/app/incidents">Incidents</NavLink>
+          <NavLink to="/app/alerts">Alerts</NavLink>
         </nav>
         <button type="button" className="link" onClick={logout}>
           Log out
