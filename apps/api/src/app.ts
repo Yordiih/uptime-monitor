@@ -9,6 +9,7 @@ import { logger } from "./logger";
 import { errorHandler } from "./middleware/error";
 import { authRouter } from "./routes/auth";
 import { monitorsRouter } from "./routes/monitors";
+import { monitorStatsRouter } from "./routes/monitorStats";
 import { notificationsRouter } from "./routes/notifications";
 import { incidentsRouter } from "./routes/incidents";
 
@@ -57,6 +58,7 @@ app.use(
 );
 app.use("/api/auth", authRouter);
 app.use("/api/monitors", monitorsRouter);
+app.use("/api/monitors", monitorStatsRouter);
 app.use("/api/notifications", notificationsRouter);
 app.use("/api/incidents", incidentsRouter);
 

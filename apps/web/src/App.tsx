@@ -6,6 +6,7 @@ import AlertsPage from "./pages/AlertsPage";
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
 import IncidentsPage from "./pages/IncidentsPage";
+import MonitorDetailPage from "./pages/MonitorDetailPage";
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { token } = useAuth();
@@ -24,6 +25,7 @@ export default function App() {
         }
       >
         <Route path="/" element={<Dashboard />} />
+        <Route path="/monitors/:id" element={<MonitorDetailPage />} />
         <Route path="/incidents" element={<IncidentsPage />} />
         <Route path="/alerts" element={<AlertsPage />} />
       </Route>

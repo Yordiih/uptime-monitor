@@ -5,6 +5,7 @@ import { requireAuth } from "../middleware/auth";
 import { validate } from "../middleware/validate";
 import { Monitor } from "../models/Monitor";
 import { Incident } from "../models/Incident";
+import { CheckResult } from "../models/CheckResult";
 
 const MAX_MONITORS_PER_USER = 20;
 
@@ -84,5 +85,6 @@ monitorsRouter.delete("/:id", async (req, res) => {
     return;
   }
   await Incident.deleteMany({ monitor: req.params.id });
+  await CheckResult.deleteMany({ monitor: req.params.id });
   res.status(204).end();
 });

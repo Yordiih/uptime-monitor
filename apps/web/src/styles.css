@@ -118,3 +118,29 @@ button.link { border: none; background: none; color: var(--accent); padding: 0.2
 .setting-row { display: flex; align-items: center; gap: 0.6rem; margin: 0.75rem 0; }
 .form-row input[type="password"] { flex: 1 1 260px; }
 .ok { color: var(--up); margin: 0.5rem 0 0; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.75rem; margin-bottom: 1rem; }
+.stat { display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 0; }
+.stat-value { font-size: 1.5rem; font-weight: 700; }
+.up-text { color: var(--up); }
+.down-text { color: var(--down); }
+.small { font-size: 0.8rem; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.filters input[type="search"] { flex: 1 1 220px; }
+
+.detail-head { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.detail-head h2 { margin: 0; font-size: 1.3rem; }
+
+.chart { width: 100%; height: auto; display: block; }
+.chart-grid { stroke: var(--border); stroke-width: 1; }
+.chart-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+.chart-dot { fill: var(--accent); }
+.chart-down { fill: var(--down); opacity: 0.18; }
+.chart-label { fill: var(--muted); font-size: 11px; }
+
+.plain-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.table-wrap { overflow-x: auto; }
+.history { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.history th, .history td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
+.history td:last-child { white-space: normal; }
