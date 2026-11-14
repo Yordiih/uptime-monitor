@@ -1,18 +1,20 @@
 import { useState, type FormEvent } from "react";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { describeError } from "../api";
 import { useAuth } from "../auth";
+import { authModeFromSearch } from "../authMode";
 
 export default function AuthPage() {
   const { token, login, register } = useAuth();
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const location = useLocation();
+  const [mode, setMode] = useState<"login" | "register">(authModeFromSearch(location.search));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   if (token) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/app" replace />;
   }
 
   async function onSubmit(event: FormEvent) {
@@ -74,6 +76,9 @@ export default function AuthPage() {
           {mode === "login" ? "Need an account? Register" : "Have an account? Log in"}
         </button>
       </form>
+      <p className="muted small">
+        <Link to="/">Back to home</Link>
+      </p>
     </main>
   );
 }

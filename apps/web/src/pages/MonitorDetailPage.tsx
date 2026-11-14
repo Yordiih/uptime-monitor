@@ -76,7 +76,7 @@ export default function MonitorDetailPage() {
     return (
       <>
         <p className="muted">This monitor does not exist (or was deleted).</p>
-        <Link to="/">Back to monitors</Link>
+        <Link to="/app">Back to monitors</Link>
       </>
     );
   }
@@ -94,7 +94,7 @@ export default function MonitorDetailPage() {
   return (
     <>
       <p>
-        <Link to="/">&larr; All monitors</Link>
+        <Link to="/app">&larr; All monitors</Link>
       </p>
       <div className="detail-head">
         <span className={`badge ${status}`}>{status}</span>

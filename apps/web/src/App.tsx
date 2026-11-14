@@ -6,7 +6,9 @@ import AlertsPage from "./pages/AlertsPage";
 import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
 import IncidentsPage from "./pages/IncidentsPage";
+import LandingPage from "./pages/LandingPage";
 import MonitorDetailPage from "./pages/MonitorDetailPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function RequireAuth({ children }: { children: ReactNode }) {
   const { token } = useAuth();
@@ -16,20 +18,22 @@ function RequireAuth({ children }: { children: ReactNode }) {
 export default function App() {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<AuthPage />} />
       <Route
+        path="/app"
         element={
           <RequireAuth>
             <Layout />
           </RequireAuth>
         }
       >
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/monitors/:id" element={<MonitorDetailPage />} />
-        <Route path="/incidents" element={<IncidentsPage />} />
-        <Route path="/alerts" element={<AlertsPage />} />
+        <Route index element={<Dashboard />} />
+        <Route path="monitors/:id" element={<MonitorDetailPage />} />
+        <Route path="incidents" element={<IncidentsPage />} />
+        <Route path="alerts" element={<AlertsPage />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
