@@ -171,10 +171,56 @@ export const sendTestNotification = (channel: "slack" | "email") =>
     body: JSON.stringify({ channel }),
   });
 
-export const listIncidents = (params: { status?: "open" | "resolved"; limit?: number } = {}) => {
+export const listIncidents = (
+  params: { status?: "open" | "resolved"; monitor?: string; limit?: number } = {}
+) => {
   const query = new URLSearchParams();
   if (params.status) query.set("status", params.status);
+  if (params.monitor) query.set("monitor", params.monitor);
   if (params.limit) query.set("limit", String(params.limit));
   const qs = query.toString();
   return request<Incident[]>(`/incidents${qs ? `?${qs}` : ""}`);
 };
+
+export type Range = "24h" | "7d" | "30d";
+
+export interface SeriesPoint {
+  t: number;
+  checks: number;
+  up: number;
+  avgMs: number | null;
+}
+
+export interface MonitorStats {
+  range: Range;
+  from: number;
+  to: number;
+  bucketMs: number;
+  summary: {
+    checks: number;
+    up: number;
+    uptimePercent: number | null;
+    avgResponseMs: number | null;
+    maxResponseMs: number | null;
+    incidents: number;
+  };
+  series: SeriesPoint[];
+}
+
+export interface CheckEntry {
+  _id: string;
+  checkedAt: string;
+  up: boolean;
+  statusCode: number | null;
+  responseTimeMs: number | null;
+  error: string | null;
+}
+
+export const getMonitor = (id: string) =>
+  request<Monitor>(`/monitors/${encodeURIComponent(id)}`);
+
+export const getMonitorStats = (id: string, range: Range) =>
+  request<MonitorStats>(`/monitors/${encodeURIComponent(id)}/stats?range=${range}`);
+
+export const getMonitorChecks = (id: string, limit = 50) =>
+  request<CheckEntry[]>(`/monitors/${encodeURIComponent(id)}/checks?limit=${limit}`);
