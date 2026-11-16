@@ -153,7 +153,7 @@ export default function Dashboard() {
         {visible.map((monitor) => {
           const status = statusOf(monitor);
           return (
-            <li key={monitor._id} className="card monitor">
+            <li key={monitor._id} className={`card monitor s-${status}`}>
               <span className={`badge ${status}`}>{status}</span>
               <div className="monitor-info">
                 <Link to={`/app/monitors/${monitor._id}`}>

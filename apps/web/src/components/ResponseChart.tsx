@@ -25,6 +25,7 @@ export default function ResponseChart({
 }) {
   const innerW = W - PAD.left - PAD.right;
   const innerH = H - PAD.top - PAD.bottom;
+  const baseline = PAD.top + innerH;
   const values = series.map((point) => point.avgMs);
   const known = values.filter((value): value is number => value !== null);
   const top = niceCeil(Math.max(100, ...known));
@@ -42,6 +43,32 @@ export default function ResponseChart({
       aria-label="Average response time over the selected range, with failed periods highlighted"
     >
       <title>Average response time over the selected range</title>
+      <defs>
+        {/* userSpaceOnUse keeps the gradient visible even when the line is perfectly flat */}
+        <linearGradient
+          id="rt-line"
+          gradientUnits="userSpaceOnUse"
+          x1={PAD.left}
+          x2={W - PAD.right}
+          y1="0"
+          y2="0"
+        >
+          <stop offset="0" stopColor="#6366f1" />
+          <stop offset="0.6" stopColor="#06b6d4" />
+          <stop offset="1" stopColor="#ec4899" />
+        </linearGradient>
+        <linearGradient
+          id="rt-area"
+          gradientUnits="userSpaceOnUse"
+          x1="0"
+          x2="0"
+          y1={PAD.top}
+          y2={baseline}
+        >
+          <stop offset="0" stopColor="#6366f1" stopOpacity="0.28" />
+          <stop offset="1" stopColor="#6366f1" stopOpacity="0" />
+        </linearGradient>
+      </defs>
 
       {ticks.map((tick) => (
         <g key={tick}>
@@ -65,23 +92,32 @@ export default function ResponseChart({
         ) : null
       )}
 
-      {runsOf(values).map((run) =>
-        run.length === 1 ? (
-          <circle
-            key={run[0].index}
-            className="chart-dot"
-            cx={x(run[0].index)}
-            cy={y(run[0].value)}
-            r={2.5}
-          />
-        ) : (
-          <polyline
-            key={run[0].index}
-            className="chart-line"
-            points={run.map((p) => `${x(p.index).toFixed(1)},${y(p.value).toFixed(1)}`).join(" ")}
-          />
-        )
-      )}
+      {runsOf(values).map((run) => {
+        if (run.length === 1) {
+          return (
+            <circle
+              key={run[0].index}
+              className="chart-dot"
+              cx={x(run[0].index)}
+              cy={y(run[0].value)}
+              r={2.5}
+            />
+          );
+        }
+        const line = run.map((p) => `${x(p.index).toFixed(1)},${y(p.value).toFixed(1)}`).join(" ");
+        const area = `${line} ${x(run[run.length - 1].index).toFixed(1)},${baseline} ${x(run[0].index).toFixed(1)},${baseline}`;
+        return (
+          <g key={run[0].index}>
+            <polygon points={area} fill="url(#rt-area)" />
+            <polyline
+              className="chart-line"
+              points={line}
+              pathLength={1}
+              stroke="url(#rt-line)"
+            />
+          </g>
+        );
+      })}
 
       <text className="chart-label" x={PAD.left} y={H - 6}>
         {label(from)}
